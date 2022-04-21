@@ -1,22 +1,22 @@
 # Made by MajorGamerJay <majorgamerjay@protonmail.com>
 
 # Importing important modules
-import sys
 import argparse
 import subprocess
+import sys
 
 
-# Defining MDFile object class
-class MDFile:
+# Defining MDDir object class
+class MDDir:
     def __init__(
             self,
-            path,
-            header,
-            footer
+            root,
             ):
-        self.path = path
-        self.header = header
-        self.footer = footer
+        self.root = root
+
+    headers = []
+    footers = []
+
 
 # Declaring argument parser
 parser = argparse.ArgumentParser(prog=f"{sys.argv[0]}", description="Static \
@@ -26,9 +26,9 @@ parser.add_argument("src", help="Source files directory")
 parser.add_argument("dest", help="Destination documents directory")
 args = parser.parse_args()
 
-
 def lowdown(file):
     result = subprocess.run(
             ['lowdown', file],
             stdout=subprocess.PIPE
         ).stdout.decode('utf-8')
+    return result
