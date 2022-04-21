@@ -2,6 +2,7 @@
 
 # Importing important modules
 import argparse
+import os
 import subprocess
 import sys
 
@@ -25,6 +26,15 @@ parser = argparse.ArgumentParser(prog=f"{sys.argv[0]}", description="Static \
 parser.add_argument("src", help="Source files directory")
 parser.add_argument("dest", help="Destination documents directory")
 args = parser.parse_args()
+
+working_dirs = []  # list of MDDir objects to work in
+
+for r, d, f in os.walk(os.getcwd()+'/'+args.src):
+    working_dirs.append(MDDir(r))
+
+for x in working_dirs:
+    print(x.root)
+
 
 def lowdown(file):
     result = subprocess.run(
