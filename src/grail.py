@@ -3,6 +3,7 @@
 # Importing important modules
 import sys
 import argparse
+import subprocess
 
 # Declaring argument parser
 parser = argparse.ArgumentParser(prog=f"{sys.argv[0]}", description="Static \
@@ -11,3 +12,10 @@ parser = argparse.ArgumentParser(prog=f"{sys.argv[0]}", description="Static \
 parser.add_argument("src", help="Source files directory")
 parser.add_argument("dest", help="Destination documents directory")
 args = parser.parse_args()
+
+
+def lowdown(file):
+    result = subprocess.run(
+            ['lowdown', file],
+            stdout=subprocess.PIPE
+        ).stdout.decode('utf-8')
