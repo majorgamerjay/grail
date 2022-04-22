@@ -4,6 +4,8 @@ import argparse
 import os
 import subprocess
 import sys
+import pathlib
+import shutil
 
 
 # Defining MDDir object class
@@ -66,6 +68,7 @@ def get_other_files(path):
         os.path.join(path, f)) and not f.endswith(".md")]
 
 
+# Adds other files in self.others[]
 for x in working_dirs:
     x.add_other_files(x.root)
 
@@ -89,6 +92,7 @@ def lowdown(file):
         ).stdout.decode('utf-8')
 
 
+# Convert individual files and append with lowdown
 def convert_individual_file(headers, footers, path, root):
     body = lowdown(path)
 
@@ -99,6 +103,17 @@ def convert_individual_file(headers, footers, path, root):
 
     return body
 
+
+# Make destination directories
+def make_dest_dirs(src, dest):
+    if os.path.exists(dest):  # note: if directory exists, it gets deleted
+        shutil.rmtree(dest)
+
+    shutil.copytree(src, dest)
+
+# def make_dest_dirs(src, dest):
+    # for x in os.walk(src):
+        # os.makedirs(os.path.join(dest, x[0]), exist_ok=True)
 
 # convert_individual_file(
 #         x.headers,
