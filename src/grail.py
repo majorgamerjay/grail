@@ -71,6 +71,15 @@ def get_other_files(path):
 for x in working_dirs:
     x.add_other_files(x.root)
 
+def debug_working_dirs():
+    for x in working_dirs:
+        print(f"""
+        Root: {x.root}
+        MD: {x.files}
+        Headers: {x.headers}
+        Footers: {x.footers}
+        Others: {x.others}
+        ---------------------""")
 
 # Returns MD->HTML converted output
 def lowdown(file):
