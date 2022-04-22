@@ -2,7 +2,6 @@
 
 # Importing important modules
 import argparse
-import glob
 import os
 import subprocess
 import sys
@@ -16,13 +15,23 @@ class MDDir:
             ):
         self.root = root
         self.files = []
-        self.headers = []
-        self.footers = []
+        self.headers = []  # HTML/MD header files
+        self.footers = []  # HTML/MD footer files
+        self.others = []  # Other files, .css, .jpg, .png etc.
 
     # Adds MD files in self.files[]
     def add_md_files(self, path):
         for x in get_md_files(path):
-            self.files.append(x)
+            if x.startswith("_header"):
+                self.headers.append(x)
+            elif x.startswith("_footer"):
+                self.footers.append(x)
+            else:
+                self.files.append(x)
+
+    def add_other_files(self, path):
+        for x in get_other_files(path):
+            self.others.append(x)
 
 
 # Declaring argument parser
@@ -43,17 +52,29 @@ for r, d, f in os.walk(os.getcwd()+'/'+args.src):
 # Returns markdown files in designated directory
 def get_md_files(path):
     return [f for f in os.listdir(path) if os.path.isfile(
-        os.path.join(path, f))]
+        os.path.join(path, f)) and f.endswith(".md")]
 
 
-# Adds markdown files in self.files[] of MDDir object
+# Adds markdown files in self.files[], self.headers[] and self.footers[]
+# of MDDir object
 for x in working_dirs:
     x.add_md_files(x.root)
 
 
+
+# Return non-markdown files in designated directory
+def get_other_files(path):
+    return [f for f in os.listdir(path) if os.path.isfile(
+        os.path.join(path, f)) and not f.endswith(".md")]
+
+
+for x in working_dirs:
+    x.add_other_files(x.root)
+
+
+# Returns MD->HTML converted output
 def lowdown(file):
-    result = subprocess.run(
+    return subprocess.run(
             ['lowdown', file],
             stdout=subprocess.PIPE
         ).stdout.decode('utf-8')
-    return result
