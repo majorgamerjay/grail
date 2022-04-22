@@ -1,6 +1,5 @@
 # Made by MajorGamerJay <majorgamerjay@protonmail.com>
 
-# Importing important modules
 import argparse
 import os
 import subprocess
@@ -61,7 +60,6 @@ for x in working_dirs:
     x.add_md_files(x.root)
 
 
-
 # Return non-markdown files in designated directory
 def get_other_files(path):
     return [f for f in os.listdir(path) if os.path.isfile(
@@ -70,6 +68,7 @@ def get_other_files(path):
 
 for x in working_dirs:
     x.add_other_files(x.root)
+
 
 def debug_working_dirs():
     for x in working_dirs:
@@ -81,9 +80,30 @@ def debug_working_dirs():
         Others: {x.others}
         ---------------------""")
 
+
 # Returns MD->HTML converted output
 def lowdown(file):
     return subprocess.run(
             ['lowdown', file],
             stdout=subprocess.PIPE
         ).stdout.decode('utf-8')
+
+
+def convert_individual_file(headers, footers, path, root):
+    body = lowdown(path)
+
+    for header in headers:
+        body = lowdown(os.path.join(root, header)) + body
+    for footer in footers:
+        body = body + lowdown(os.path.join(root, footer))
+
+    return body
+
+
+# convert_individual_file(
+#         x.headers,
+#         x.footers,
+#         os.path.join(
+#             x.root,
+#             file),
+#         x.root
