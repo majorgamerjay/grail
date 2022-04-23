@@ -34,19 +34,11 @@ class MDDir:
             self.others.append(x)
 
 
-# Declaring argument parser
-parser = argparse.ArgumentParser(prog=f"{sys.argv[0]}", description="Static \
-        website generator using lowdown and python based content management \
-        system")
-parser.add_argument("src", help="Source files directory")
-parser.add_argument("dest", help="Destination documents directory")
-args = parser.parse_args()
-
-working_dirs = []  # list of MDDir objects to work in
-
-# Append MDDir objects to working_dirs
-for r, d, f in os.walk(os.getcwd()+'/'+args.src):
-    working_dirs.append(MDDir(r))  # initialize with working dirs of source
+def check_if_target_is_valid(dest):
+    if os.path.isfile(os.path.join(dest, ".grail_target")):
+        return True
+    else:
+        return False
 
 
 # Returns markdown files in designated directory
@@ -55,21 +47,15 @@ def get_md_files(path):
         os.path.join(path, f)) and f.endswith(".md")]
 
 
-# Adds markdown files in self.files[], self.headers[] and self.footers[]
-# of MDDir object
-for x in working_dirs:
-    x.add_md_files(x.root)
-
-
 # Return non-markdown files in designated directory
 def get_other_files(path):
     return [f for f in os.listdir(path) if os.path.isfile(
         os.path.join(path, f)) and not f.endswith(".md")]
 
 
-# Adds other files in self.others[]
-for x in working_dirs:
-    x.add_other_files(x.root)
+def create_target_validation(dest):
+    file = open(os.path.join(dest, ".grail_target"), 'x')
+    file.close()
 
 
 def debug_working_dirs():
@@ -117,6 +103,7 @@ def make_dest_dirs(src, dest):
             dest,
             ignore=shutil_ignore_callback)
 
+
 # Main convert-append-copy job
 def copy_job(src, dest):
     src = os.path.abspath(src)
@@ -142,8 +129,44 @@ def copy_job(src, dest):
                     os.path.join(src, relative, other),
                     os.path.join(dest, relative, other))
 
-make_dest_dirs(args.src, args.dest)
-copy_job(args.src, args.dest)
+
+# Declaring argument parser
+parser = argparse.ArgumentParser(prog=f"{sys.argv[0]}", description="Static \
+        website generator using lowdown and python based content management \
+        system")
+parser.add_argument("src", help="Source files directory")
+parser.add_argument("dest", help="Destination documents directory")
+args = parser.parse_args()
+
+working_dirs = []  # list of MDDir objects to work in
+
+# Append MDDir objects to working_dirs
+for r, d, f in os.walk(os.getcwd()+'/'+args.src):
+    working_dirs.append(MDDir(r))  # initialize with working dirs of source
+
+
+
+
+
+# Adds markdown files in self.files[], self.headers[] and self.footers[]
+# of MDDir object
+for x in working_dirs:
+    x.add_md_files(x.root)
+
+
+
+
+# Adds other files in self.others[]
+for x in working_dirs:
+    x.add_other_files(x.root)
+
+
+if check_if_target_is_valid(args.dest):
+    make_dest_dirs(args.src, args.dest)
+    copy_job(args.src, args.dest)
+    create_target_validation(args.dest)
+else:
+    print("Target is not valid!")
 
 # def make_dest_dirs(src, dest):
     # for x in os.walk(src):
