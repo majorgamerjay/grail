@@ -4,7 +4,6 @@ import argparse
 import os
 import subprocess
 import sys
-import pathlib
 import shutil
 
 
@@ -104,12 +103,47 @@ def convert_individual_file(headers, footers, path, root):
     return body
 
 
+def shutil_ignore_callback(src, files):
+    return [f for f in files if os.path.isfile(os.path.join(src, f))]
+
+
 # Make destination directories
 def make_dest_dirs(src, dest):
     if os.path.exists(dest):  # note: if directory exists, it gets deleted
         shutil.rmtree(dest)
 
-    shutil.copytree(src, dest)
+    shutil.copytree(
+            src,
+            dest,
+            ignore=shutil_ignore_callback)
+
+# Main convert-append-copy job
+def copy_job(src, dest):
+    src = os.path.abspath(src)
+    prefix_index = len(src) + len(os.path.sep)
+
+    for mddir in working_dirs:
+        relative = mddir.root[prefix_index:]  # relative directory from source
+
+        for file in mddir.files:
+            with open(os.path.join(
+                dest,
+                relative,
+                file[:-2]+"html"), 'x') as writable:
+                writable.write(
+                        convert_individual_file(
+                            mddir.headers,
+                            mddir.footers,
+                            os.path.join(src, relative, file),
+                            mddir.root))
+
+        for other in mddir.others:
+            shutil.copyfile(
+                    os.path.join(src, relative, other),
+                    os.path.join(dest, relative, other))
+
+make_dest_dirs(args.src, args.dest)
+copy_job(args.src, args.dest)
 
 # def make_dest_dirs(src, dest):
     # for x in os.walk(src):
