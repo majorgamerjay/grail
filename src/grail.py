@@ -86,6 +86,15 @@ def convert_individual_file(headers, footers, path, root):
     for footer in footers:
         body = body + lowdown(os.path.join(root, footer))
 
+    # This part checks for _header.html, _footer.html and appends it
+    if os.path.isfile(os.path.join(root, '_header.html')):
+        with open(os.path.join(root, '_header.html'), "r") as header:
+            body = header.read() + '\n' + body
+
+    if os.path.isfile(os.path.join(root, '_footer.html')):
+        with open(os.path.join(root, '_footer.html'), "r") as footer:
+            body = body + '\n' + footer.read()
+
     return body
 
 
@@ -145,15 +154,10 @@ for r, d, f in os.walk(os.getcwd()+'/'+args.src):
     working_dirs.append(MDDir(r))  # initialize with working dirs of source
 
 
-
-
-
 # Adds markdown files in self.files[], self.headers[] and self.footers[]
 # of MDDir object
 for x in working_dirs:
     x.add_md_files(x.root)
-
-
 
 
 # Adds other files in self.others[]
@@ -166,16 +170,5 @@ if check_if_target_is_valid(args.dest):
     copy_job(args.src, args.dest)
     create_target_validation(args.dest)
 else:
-    print("Target is not valid!")
-
-# def make_dest_dirs(src, dest):
-    # for x in os.walk(src):
-        # os.makedirs(os.path.join(dest, x[0]), exist_ok=True)
-
-# convert_individual_file(
-#         x.headers,
-#         x.footers,
-#         os.path.join(
-#             x.root,
-#             file),
-#         x.root
+    print("Given destination directory does not have .grail_target,\
+            grail will not generate!.")
