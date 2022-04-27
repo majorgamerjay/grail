@@ -115,8 +115,7 @@ def make_dest_dirs(src, dest):
 
 # Main convert-append-copy job
 def copy_job(src, dest):
-    src = os.path.abspath(src)
-    prefix_index = len(src) + len(os.path.sep)
+    prefix_index = len(os.path.abspath(src)) + len(os.path.sep)
 
     for mddir in working_dirs:
         relative = mddir.root[prefix_index:]  # relative directory from source
@@ -150,8 +149,8 @@ args = parser.parse_args()
 working_dirs = []  # list of MDDir objects to work in
 
 # Append MDDir objects to working_dirs
-for r, d, f in os.walk(os.getcwd()+'/'+args.src):
-    working_dirs.append(MDDir(r))  # initialize with working dirs of source
+for r, d, f in os.walk(args.src):
+    working_dirs.append(MDDir(os.path.abspath(r)))  # initialize with working dirs of source
 
 
 # Adds markdown files in self.files[], self.headers[] and self.footers[]
