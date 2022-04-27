@@ -72,7 +72,14 @@ def debug_working_dirs():
 # Returns MD->HTML converted output
 def lowdown(file):
     return subprocess.run(
-            ['lowdown', file],
+            [
+                'lowdown',
+                '--html-no-escapehtml',
+                '--html-no-skiphtml',
+                '--parse-no-metadata',
+                '--parse-no-autolink',
+                file
+            ],
             stdout=subprocess.PIPE
         ).stdout.decode('utf-8')
 
