@@ -6,8 +6,8 @@
 Grail is a static website generator similar to
 [ssg6](https://www.romanzolotarev.com/ssg.html) but made in python. It takes a 
 source directory and a destination directory and copies the directory 
-structure tree from the source directory to the destination directory, converts
-the markdown files and copies the non-markdown files to the destination directory.
+structure tree from the source directory to the destination, and converts
+the markdown files and copies the non-markdown files.
 
 It supports adding headers and footers written in markdown and html.
 
